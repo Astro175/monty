@@ -1,6 +1,8 @@
-#include "main.h"
+#include "monty.h"
 #define _GNU_SOURCE
 
+
+bus_t bus = {NULL, NULL, NULL, 0};
 /**
  * main - program that performs stack operations
  * @argv: array of arguments
@@ -10,38 +12,40 @@
 
 int main(int argc, char **argv)
 {
-	char *line = NULL;
-	size_t len = 0;
-	char *token;
-	ssize_t read;
-	unsigned int line_number = 0;
-	int i = 0;
-	instruction_t ops[] = {
-		{"push", push},
-		{"pall", pall},
-		{NULL, NULL}
-	};
+	char *content;
+	FILE *file;
+	size_t size = 0;
+	ssize_t read_line = 1;
+	stack_t stack = NULL;
+	unsigned int counter = 0;
 
-	while ((read = getline(&line, &len, stdin)) != -1)
+	if (argc != 2)
 	{
-		line_number++;
-		token = strtok(line, " \n");
-		if (token == NULL)
-			continue;
-		while (ops[i].opcode != NULL)
-		{
-			if (strcmp(token, ops[i].opcode) == 0)
-			{
-				ops[i].f(&head, line_number);
-				break;
-			}
-			i++;
-		}
-		if (ops[i].opcode == NULL)
-		{
-			fprintf(stderr, "L%d: unknown instruction %s\n", line_number, token);
-			exit(EXIT_FAILURE);
-		}
+		fprintf(stderr, "USAGE: Can't open file\n");
+		exit(EXIT_FAILURE);
 	}
+	file = fopen(agrv[1], "r");
+	bus.file = file;
+
+	if (!file)
+	{
+		fprintf("Error: Can't open file %s\n", argv[1]);
+		exit(EXIT_FAILURE);
+	}
+
+	while (read_line > 0)
+	{
+		content = NULL;
+		read_line = getline(&content, &size, file);
+		bus.content = content;
+		counter++;
+		if (read_line > 0)
+		{
+			execute(&content, &stack, counter, file);
+		}
+		free(content);
+	}
+	free_stack(stack);
+	fclose(file);
 	return (0);
 }
