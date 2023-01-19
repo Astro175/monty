@@ -1,4 +1,5 @@
 #include "main.h"
+#define _GNU_SOURCE
 
 /**
  * main - program that performs stack operations
