@@ -16,7 +16,7 @@ void f_rotl(stack_t **head,  __attribute__((unused)) unsigned int counter)
 	aux = (*head)->next;
 	aux->prev = NULL;
 
-	while(tmp->next != NULL)
+	while (tmp->next != NULL)
 	{
 		tmp = tmp->next;
 	}
